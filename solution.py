@@ -141,6 +141,7 @@ def reduce_puzzle(values):
         solved_values_before = len([box for box in values.keys() if len(values[box]) == 1])
         values = eliminate(values)
         values = only_choice(values)
+        values = naked_twins(values)
         solved_values_after = len([box for box in values.keys() if len(values[box]) == 1])
         stalled = solved_values_before == solved_values_after
         if len([box for box in values.keys() if len(values[box]) == 0]):
@@ -175,13 +176,15 @@ def solve(grid):
     Returns:
         The dictionary representation of the final sudoku grid. False if no solution exists.
     """
-    return grid_values(grid)
+    return search(grid_values(grid))
 
 boxes = cross(rows, cols)
 row_units = [cross(r, cols) for r in rows]
 column_units = [cross(rows, c) for c in cols]
 square_units = [cross(rs, cs) for rs in ('ABC','DEF','GHI') for cs in ('123','456','789')]
-unitlist = row_units + column_units + square_units
+diagonal_units = [[ t[0]+t[1] for t in list(zip(rows,cols)) ]]
+diagonal_units += [[ t[0]+t[1] for t in list(zip(rows,reversed(cols))) ]]
+unitlist = row_units + column_units + square_units + diagonal_units
 units = dict((s, [u for u in unitlist if s in u]) for s in boxes)
 peers = dict((s, set(sum(units[s],[]))-set([s])) for s in boxes)
 
@@ -191,7 +194,7 @@ if __name__ == '__main__':
 
     try:
         from visualize import visualize_assignments
-        visualize_assignments(assignments)
+        # visualize_assignments(assignments)
 
     except SystemExit:
         pass
