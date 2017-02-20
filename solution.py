@@ -13,6 +13,36 @@ def assign_value(values, box, value):
         assignments.append(values.copy())
     return values
 
+def has_twins(values, value, box_units):
+    """Search if there is a twin for `value` in box_units.
+    Args:
+        values(dict): Dictionary with possible values for a box. {'box': '123456789'}
+        value(str): Value to check if is found in box_units
+        box_units(list): List of boxes that belongs to the same unit, where we are looking for a twin
+
+    Returns:
+        return True if twin found
+    """
+    twins_found = [peer for peer in box_units if values[peer] == value]
+    return len(twins_found) > 1
+
+def remove_twin_in_peers(values, twin, box_units):
+    """remove twin digits in box_units values.
+    Args:
+        values(dict): Dictionary with possible values for a box. {'box': '123456789'}
+        twin(str): Twin found, states digits to be removed from box_units
+        box_units(list): List of boxes that belongs to the same unit, where we are looking for twin digits to be removed
+
+    Returns:
+        return values dict where twin digits has been removed from same twin unit
+    """
+    for peer in box_units:
+        if len(values[peer]) == 1 or values[peer] == twin:
+            continue
+        for digit in twin:
+            values[peer] = values[peer].replace(digit, '')
+    return values
+
 def naked_twins(values):
     """Eliminate values using the naked twins strategy.
     Args:
@@ -21,10 +51,16 @@ def naked_twins(values):
     Returns:
         the values dictionary with the naked twins eliminated from peers.
     """
-
-    # Find all instances of naked twins
-    # Eliminate the naked twins as possibilities for their peers
-
+    for box in boxes:
+        if len(values[box]) != 2:
+            continue
+        value = values[box]
+        # Find all instances of naked twins
+        for box_units in units[box]:
+            if has_twins(values, value, box_units):
+                # Eliminate the naked twins as possibilities for their peers
+                values = remove_twin_in_peers(values, value, box_units)
+    return values
 
 def cross(A, B):
     "Cross product of elements in A and elements in B."
