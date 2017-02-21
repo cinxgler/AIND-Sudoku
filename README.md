@@ -4,12 +4,13 @@
 # Question 1 (Naked Twins)
 Q: How do we use constraint propagation to solve the naked twins problem?
 
-A: We are restricting the possible values (constraints) on other boxes in a unit based on the twins found. We are doing it by removing the digits (adding a constraint) from the naked twin to other boxes.
+A: The main idea behind constraint propagation is to forbid certain values on some variables of the problem, this allows to fulfill the problems constraints. For this sudoku problem the boxes are the variables and the domain is the digits from 1 to 9, the constraint is to have one different digit in the box per unit. We are using constraint propagation with the naked twins by removing possible values from other boxes in the same unit of the naked twins, the values to remove are the digits that are already used by the naked twins.
+
 
 # Question 2 (Diagonal Sudoku)
 Q: How do we use constraint propagation to solve the diagonal sudoku problem?
 
-A: Basically adding the diagonal rule we are adding a new space where the digit constraint applies.
+A: When we add the diagonal rule we are adding a new unit that must be verified to determine if the problem is solved. This makes the algorithm restrict the possible values using eliminate, only_choice and nake_twins for a box using this additional constraint per box.
 
 ### Install
 
